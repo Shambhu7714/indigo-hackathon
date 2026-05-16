@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FolderOpen, Plus } from 'lucide-react'
+import { FolderOpen, Plus, Clock, ArrowRight } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { useProjectsStore } from '@/store/projectsStore'
 
@@ -19,49 +19,80 @@ export function ProjectsPage() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-            <p className="mt-1 text-sm text-gray-600">Pick a campaign workspace or start a new one.</p>
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="animate-slide-up">
+            <h1 className="text-4xl font-black tracking-tight sm:text-5xl">Campaign Fleet.</h1>
+            <p className="mt-3 text-lg text-white/50">Manage your active creative orbits.</p>
           </div>
-          <form onSubmit={create} className="flex w-full max-w-md flex-col gap-2 sm:flex-row sm:items-center">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="New project name"
-              className="flex-1 rounded-lg border border-gray-300 px-3 py-2.5 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            />
+          
+          <form onSubmit={create} className="flex w-full max-w-md gap-3 animate-slide-up delay-100">
+            <div className="relative flex-1 group">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Campaign name..."
+                className="w-full rounded-2xl border border-white/5 bg-white/5 py-4 px-5 text-sm text-white placeholder:text-white/20 focus:border-brand-orange/50 focus:outline-none focus:ring-4 focus:ring-brand-orange/5 transition-all"
+              />
+            </div>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#0C2340] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0a1c34]"
+              className="btn-orange whitespace-nowrap px-8"
             >
               <Plus className="h-4 w-4" />
-              New project
+              <span>Launch</span>
             </button>
           </form>
         </div>
 
-        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((p) => (
-            <li key={p.id}>
+        {projects.length === 0 ? (
+          <div className="mt-20 flex flex-col items-center justify-center rounded-[40px] border-2 border-dashed border-white/5 py-32 animate-fade-in delay-200">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/5 text-white/20">
+              <FolderOpen className="h-10 w-10" />
+            </div>
+            <h3 className="mt-6 text-xl font-bold">No active campaigns.</h3>
+            <p className="mt-2 text-white/40">Start by creating your first project above.</p>
+          </div>
+        ) : (
+          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-fade-in delay-200">
+            {projects.map((p, idx) => (
               <Link
+                key={p.id}
                 to={`/projects/${p.id}`}
-                className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-200 hover:shadow-md"
+                className="glass-card group relative p-8 flex flex-col h-full"
+                style={{ animationDelay: `${idx * 0.1}s` }}
               >
-                <span className="rounded-lg bg-blue-50 p-3 text-blue-900">
-                  <FolderOpen className="h-5 w-5" aria-hidden />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-gray-900">{p.name}</p>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Updated {new Date(p.updatedAt).toLocaleString()}
-                  </p>
+                <div className="flex items-start justify-between">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 text-brand-orange ring-1 ring-white/10 group-hover:scale-110 transition-transform">
+                    <FolderOpen className="h-6 w-6" />
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-white/30 group-hover:text-brand-orange transition-colors">
+                    <span>Studio</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </div>
+                </div>
+                
+                <h3 className="mt-8 text-2xl font-bold truncate group-hover:text-shimmer transition-all">
+                  {p.name}
+                </h3>
+                
+                <div className="mt-auto pt-8 flex items-center justify-between border-t border-white/5">
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                    <Clock className="h-3 w-3" />
+                    <span>{new Date(p.updatedAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex -space-x-2">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-6 w-6 rounded-full border-2 border-[#020e4a] bg-indigo-800 flex items-center justify-center text-[8px] font-bold">
+                        {String.fromCharCode(64 + i)}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </Link>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        )}
       </div>
     </AppShell>
   )

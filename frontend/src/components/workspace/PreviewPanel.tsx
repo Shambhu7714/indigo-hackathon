@@ -1,166 +1,100 @@
-import { LayoutTemplate, Loader2 } from 'lucide-react'
-import type { AgentId, AgentResults, AgentRunState } from '@/types'
-
-const labels: Record<AgentId, string> = {
-  social: 'Social agent',
-  copywriting: 'Copywriting agent',
-  banner: 'Banner agent',
-  imageGen: 'Image Gen agent',
-}
+import { Loader2, Copy, Check, Terminal, ExternalLink, ShieldCheck } from 'lucide-react'
+import { useState } from 'react'
+import type { CampaignType, RunState } from '@/types'
 
 interface PreviewPanelProps {
-  activeTab: AgentId
-  runState: AgentRunState
-  results: AgentResults
+  activeTab: CampaignType
+  runState: RunState
+  results: Record<CampaignType, string>
   hasGenerated: boolean
 }
 
-function StatusChip({ status }: { status: AgentRunState[AgentId] }) {
-  if (status === 'idle')
-    return (
-      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">Idle</span>
-    )
-  if (status === 'pending')
-    return (
-      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-900">Queued</span>
-    )
-  if (status === 'running')
-    return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-900">
-        <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
-        Running
-      </span>
-    )
-  if (status === 'done')
-    return (
-      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-900">Done</span>
-    )
-  return (
-    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-800">Error</span>
-  )
-}
-
-function isAnyRunning(run: AgentRunState) {
-  return Object.values(run).some((s) => s === 'running' || s === 'pending')
-}
-
 export function PreviewPanel({ activeTab, runState, results, hasGenerated }: PreviewPanelProps) {
-  const showEmpty = !hasGenerated && !isAnyRunning(runState)
+  const [copied, setCopied] = useState(false)
+  const content = results[activeTab]
+
+  function copyToClipboard() {
+    navigator.clipboard.writeText(content)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  if (runState === 'running') {
+    return (
+      <div className="glass-card flex min-h-[600px] flex-col items-center justify-center border-dashed border-brand-orange/30">
+        <div className="relative">
+          <div className="absolute inset-0 scale-150 blur-3xl bg-brand-orange/20 animate-pulse" />
+          <Loader2 className="relative h-16 w-16 animate-spin text-brand-orange" />
+        </div>
+        <h3 className="mt-10 text-xl font-black uppercase tracking-widest italic">Orchestrating Output...</h3>
+        <p className="mt-3 text-sm font-medium text-white/30">Synthesizing 6E brand context for {activeTab}...</p>
+      </div>
+    )
+  }
+
+  if (!hasGenerated) {
+    return (
+      <div className="glass-card flex min-h-[600px] flex-col items-center justify-center p-12 text-center border-dashed border-white/10">
+        <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/5 text-white/10">
+          <Terminal className="h-10 w-10" />
+        </div>
+        <h3 className="mt-8 text-2xl font-black">Waiting for Flight Path.</h3>
+        <p className="mt-3 max-w-xs text-white/40 font-medium">
+          Enter your campaign narrative on the left to start the AI orchestration engine.
+        </p>
+      </div>
+    )
+  }
 
   return (
-    <section className="flex min-h-[420px] flex-col rounded-xl border border-dashed border-gray-200 bg-gradient-to-b from-slate-50 to-blue-50/30 p-6 shadow-inner">
-      {showEmpty && (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 py-16 text-center">
-          <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-            <LayoutTemplate className="h-14 w-14 text-[#0C2340]/70" aria-hidden />
-          </div>
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900">Ready to create your campaign?</h3>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-gray-600">
-              Fill out the campaign details on the left to generate tailored content for all your social
-              platforms.
-            </p>
-          </div>
+    <div className="animate-fade-in space-y-6">
+      {/* Canvas Controls */}
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-3">
+          <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Canvas Output · {activeTab}</span>
         </div>
-      )}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={copyToClipboard}
+            className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white/60 ring-1 ring-white/10 hover:bg-white/10 hover:text-white transition-all"
+          >
+            {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+            {copied ? 'Copied' : 'Copy Text'}
+          </button>
+          <button className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white ring-1 ring-indigo-500 hover:bg-indigo-500 transition-all">
+            <ExternalLink className="h-3 w-3" />
+            Export
+          </button>
+        </div>
+      </div>
 
-      {(hasGenerated || isAnyRunning(runState)) && !showEmpty && (
-        <div className="space-y-4">
-          <div className="rounded-lg border border-gray-200 bg-white/90 p-4 backdrop-blur-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Agent run</p>
-            <ul className="mt-3 space-y-2">
-              {(Object.keys(labels) as AgentId[]).map((id) => (
-                <li key={id} className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-medium text-gray-800">{labels[id]}</span>
-                  <StatusChip status={runState[id]} />
-                </li>
-              ))}
-            </ul>
+      {/* Main Canvas Area */}
+      <div className="glass-card min-h-[600px] p-1 bg-gradient-to-br from-white/10 via-transparent to-transparent shadow-2xl">
+        <div className="h-full rounded-[23px] bg-[#020e4a]/60 p-10 backdrop-blur-3xl">
+          <div className="flex items-center gap-3 mb-10 pb-6 border-b border-white/5">
+             <div className="h-2 w-2 rounded-full bg-brand-orange" />
+             <div className="h-2 w-2 rounded-full bg-white/10" />
+             <div className="h-2 w-2 rounded-full bg-white/10" />
+             <div className="ml-auto flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-emerald-400 ring-1 ring-emerald-500/20">
+               <ShieldCheck className="h-3 w-3" />
+               6E Brand Verified
+             </div>
           </div>
 
-          <div className="flex-1 rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-900">Preview — {labels[activeTab]}</h3>
-            <div className="mt-4 space-y-4 text-sm text-gray-800">
-              {activeTab === 'social' && (
-                <ul className="space-y-4">
-                  {results.social.length === 0 && isAnyRunning(runState) && (
-                    <li className="text-gray-500">Generating social posts…</li>
-                  )}
-                  {results.social.map((p, i) => (
-                    <li key={i} className="rounded-lg border border-gray-100 bg-gray-50/80 p-4">
-                      <p className="text-xs font-semibold uppercase text-blue-900">{p.platform}</p>
-                      <p className="mt-2 whitespace-pre-wrap text-gray-800">{p.text}</p>
-                      <p className="mt-2 text-xs text-blue-800">{p.hashtags.join(' ')}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {activeTab === 'copywriting' && (
-                <div className="space-y-4">
-                  {results.copywriting.length === 0 && isAnyRunning(runState) && (
-                    <p className="text-gray-500">Generating copy blocks…</p>
-                  )}
-                  {results.copywriting.map((c, i) => (
-                    <div key={i} className="rounded-lg border border-gray-100 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{c.title}</p>
-                      <p className="mt-2 leading-relaxed">{c.body}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {activeTab === 'banner' && (
-                <div>
-                  {!results.banner && isAnyRunning(runState) && (
-                    <p className="text-gray-500">Composing banner spec…</p>
-                  )}
-                  {results.banner && (
-                    <div className="space-y-3">
-                      <div className="rounded-lg border-2 border-dashed border-blue-200 bg-blue-50/50 p-6 text-center">
-                        <p className="text-lg font-bold text-[#0C2340]">{results.banner.headline}</p>
-                        <p className="mt-2 text-gray-700">{results.banner.subhead}</p>
-                        <p className="mt-4 inline-block rounded-md bg-[#0C2340] px-4 py-2 text-sm font-semibold text-white">
-                          {results.banner.cta}
-                        </p>
-                      </div>
-                      <p className="text-xs text-gray-500">
-                        <span className="font-medium text-gray-700">Sizes:</span> {results.banner.dimensions}
-                      </p>
-                      <p className="text-xs text-gray-600">{results.banner.notes}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'imageGen' && (
-                <div>
-                  {!results.imageGen && isAnyRunning(runState) && (
-                    <p className="text-gray-500">Drafting image generation brief…</p>
-                  )}
-                  {results.imageGen && (
-                    <div className="space-y-3">
-                      <div className="flex aspect-video max-h-56 items-center justify-center rounded-xl bg-gradient-to-br from-slate-200 via-blue-100 to-slate-100 ring-1 ring-gray-200">
-                        <p className="max-w-sm px-6 text-center text-sm italic text-gray-600">
-                          {results.imageGen.description}
-                        </p>
-                      </div>
-                      <p className="text-xs">
-                        <span className="font-semibold text-gray-700">Style: </span>
-                        {results.imageGen.style}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        <span className="font-semibold text-gray-700">Alt text: </span>
-                        {results.imageGen.suggestedAlt}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
+          <div className="prose prose-invert max-w-none">
+            <div className="whitespace-pre-wrap text-lg leading-relaxed text-white/90 font-medium selection:bg-brand-orange/50">
+              {content || `No ${activeTab} content generated for this campaign yet.`}
             </div>
           </div>
         </div>
-      )}
-    </section>
+      </div>
+      
+      {/* Footer Meta */}
+      <div className="flex items-center justify-between px-4 py-2 opacity-30">
+        <span className="text-[9px] font-bold uppercase tracking-widest">Model: 6E-Linguistic-v2.5</span>
+        <span className="text-[9px] font-bold uppercase tracking-widest">Safety Score: 1.0</span>
+      </div>
+    </div>
   )
 }

@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Home } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 interface BreadcrumbsProps {
@@ -7,16 +7,17 @@ interface BreadcrumbsProps {
 
 export function Breadcrumbs({ projectName }: BreadcrumbsProps) {
   return (
-    <nav className="text-sm text-gray-600" aria-label="Breadcrumb">
-      <ol className="mx-auto flex max-w-7xl flex-wrap items-center gap-1 px-4 py-3 sm:px-6">
-        <li>
-          <Link to="/projects" className="font-medium text-[#0C2340] hover:underline">
-            Projects
+    <nav className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30" aria-label="Breadcrumb">
+      <ol className="flex flex-wrap items-center gap-2">
+        <li className="flex items-center gap-2">
+          <Link to="/projects" className="flex items-center gap-1.5 transition-colors hover:text-brand-orange">
+            <Home className="h-3 w-3" />
+            <span>Fleet</span>
           </Link>
         </li>
-        <li className="flex items-center gap-1">
-          <ChevronRight className="h-4 w-4 text-gray-400" aria-hidden />
-          <span className="font-medium text-gray-900">{projectName}</span>
+        <li className="flex items-center gap-2">
+          <ChevronRight className="h-3 w-3 opacity-20" aria-hidden />
+          <span className="text-white/60">{projectName}</span>
         </li>
       </ol>
     </nav>

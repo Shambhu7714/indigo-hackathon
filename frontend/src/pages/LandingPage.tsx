@@ -10,156 +10,128 @@ import {
   Share2,
   ShieldCheck,
   Sparkles,
+  Zap,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { LandingBackground } from '@/components/landing/LandingBackground'
 import { LandingNav } from '@/components/landing/LandingNav'
 
 const engines = [
-  { title: 'Social', icon: Share2, line: 'Posts and hashtags tuned to the brief and channel.' },
-  { title: 'Copywriting', icon: PenLine, line: 'Headlines, bodies, CTAs for web, CRM, and decks.' },
-  { title: 'Banner', icon: LayoutTemplate, line: 'Specs: headline, sub, sizes, hand-off notes.' },
-  { title: 'Image Gen', icon: Sparkles, line: 'Visual briefs and alt text for your gen stack.' },
+  { title: 'Social', icon: Share2, line: 'Viral-ready posts tuned to the brief.' },
+  { title: 'Copywriting', icon: PenLine, line: 'Compelling headlines & body copy.' },
+  { title: 'Visuals', icon: LayoutTemplate, line: 'Ad specs & design hand-offs.' },
+  { title: 'AI Assets', icon: Sparkles, line: 'High-fidelity generative prompts.' },
 ] as const
 
 const pillars = [
   {
     icon: ClipboardList,
-    title: 'One intake',
-    body: 'Campaign type and narrative captured once — every engine inherits the same context.',
+    title: 'Single Intake',
+    body: 'Input your campaign narrative once. Every engine inherits the exact same brand context.',
+    color: 'text-sky-400',
   },
   {
     icon: Cpu,
-    title: 'Parallel engines',
-    body: 'Social, copy, banner layout, and image-gen briefs run from that single brief.',
+    title: 'Parallel Power',
+    body: 'Four specialized AI agents run in parallel to generate comprehensive campaign suites.',
+    color: 'text-brand-orange',
   },
   {
     icon: ShieldCheck,
-    title: 'Review-native',
-    body: 'Outputs land in preview for Marketing sign-off — not silent publication.',
+    title: 'Human Approved',
+    body: 'Nothing goes live without your sign-off. Built for enterprise brand safety.',
+    color: 'text-emerald-400',
   },
 ] as const
-
-const runway = ['Brief', 'Orchestrate', 'Preview', 'Review'] as const
 
 export function LandingPage() {
   const user = useAuthStore((s) => s.user)
 
   return (
-    <div className="relative min-h-[100dvh] overflow-x-hidden text-slate-800 antialiased">
+    <div className="relative min-h-[100dvh] overflow-x-hidden text-white selection:bg-brand-orange/30">
       <LandingBackground />
       <LandingNav userSignedIn={!!user} />
 
-      <main className="relative pt-20">
-        {/* --- Hero Section --- */}
-        <section className="mx-auto max-w-7xl px-6 pt-24 pb-20 lg:pt-32 lg:pb-32">
+      <main className="relative pt-32">
+        {/* --- HERO SECTION --- */}
+        <section className="mx-auto max-w-7xl px-6 pt-12 pb-24 lg:pt-20">
           <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-center">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-800 ring-1 ring-inset ring-sky-200/50">
-                <Sparkles className="h-3 w-3" />
-                <span>AI-Powered Content Orchestration</span>
+            <div className="animate-slide-up">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-brand-orange ring-1 ring-white/10 backdrop-blur-md">
+                <Zap className="h-3 w-3 fill-brand-orange" />
+                <span>Next-Gen Content Loop</span>
               </div>
-              <h1 className="mt-8 text-balance text-5xl font-bold leading-[1.05] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
-                Campaign-ready creatives,{' '}
-                <span className="bg-gradient-to-r from-[#0C2340] via-sky-800 to-cyan-600 bg-clip-text text-transparent">
-                  reviewed for brand safety
-                </span>
+              
+              <h1 className="mt-8 text-balance text-6xl font-extrabold leading-[1.1] tracking-tight sm:text-7xl">
+                Fly with <br />
+                <span className="text-shimmer">Creative Intelligence.</span>
               </h1>
 
-              <p className="mt-8 text-pretty text-lg leading-relaxed text-slate-600 sm:text-xl">
-                One continuous flow: capture the brief, run four specialised agents, and land in a preview built for marketing review — not
-                auto-publish.
+              <p className="mt-8 max-w-lg text-pretty text-lg leading-relaxed text-white/60 sm:text-xl">
+                The internal studio for IndiGo marketing. Orchestrate campaigns at the speed of 6E with brand-safe AI agents.
               </p>
 
-              <ul className="mt-10 space-y-4 text-[15px] leading-relaxed text-slate-600">
-                {[
-                  'Mapped outputs per channel, ready for stakeholder passes',
-                  'Human approval before anything goes external',
-                  'Mocks now — swap in your agentic backend when you ship',
-                ].map((line) => (
-                  <li key={line} className="flex gap-3.5">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" aria-hidden />
-                    {line}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-12 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  to={user ? '/projects' : '/login'}
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-[#0C2340] px-10 py-4.5 text-center text-sm font-bold text-white shadow-2xl shadow-[#0C2340]/20 transition-all hover:scale-[1.02] hover:shadow-[#0C2340]/30 active:scale-[0.98]"
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    {user ? 'Go to studio' : 'Sign in to start'}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
+              <div className="mt-12 flex flex-col gap-5 sm:flex-row">
+                <Link to={user ? '/projects' : '/login'} className="btn-orange text-base px-12 py-5">
+                  <span className="flex items-center gap-3">
+                    {user ? 'Open Studio' : 'Get Started Now'}
+                    <ArrowRight className="h-5 w-5" />
                   </span>
                 </Link>
-                <Link
-                  to={user ? '/projects' : '/login'}
-                  className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white/80 px-10 py-4.5 text-center text-sm font-bold text-slate-800 backdrop-blur transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 active:scale-[0.98]"
-                >
-                  {user ? 'View Projects' : 'Enter workspace'}
+                <Link to="/login" className="btn-ghost text-base px-10 py-5">
+                  View Demo
                 </Link>
               </div>
 
-              <p className="mt-8 text-xs font-medium uppercase tracking-widest text-slate-400">
-                Internal hackathon preview · 6E Creative Studio
-              </p>
+              <div className="mt-12 flex items-center gap-8 border-t border-white/5 pt-8">
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-white">4x</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Faster Loop</span>
+                </div>
+                <div className="h-10 w-px bg-white/10" />
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-white">100%</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Brand Safe</span>
+                </div>
+              </div>
             </div>
 
-            {/* Hero Visual Component (Live Canvas Preview) */}
-            <div className="relative">
-              <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-tr from-sky-100/50 to-white/50 blur-2xl lg:-inset-8" />
-              <div className="relative overflow-hidden rounded-3xl bg-white/60 p-1 shadow-[0_32px_64px_-16px_rgba(15,23,42,0.15)] ring-1 ring-slate-200/50 backdrop-blur-2xl">
-                <div className="rounded-[1.25rem] bg-white p-6 sm:p-8">
-                  <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-6">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">Live canvas</p>
-                      </div>
-                      <p className="mt-1 text-lg font-bold text-slate-900">Winter destination push</p>
+            {/* Hero Interactive Card */}
+            <div className="relative animate-fade-in delay-300">
+              <div className="absolute -inset-10 bg-indigo-500/20 blur-[120px] animate-pulse" />
+              <div className="glass-card overflow-hidden p-1 p-px bg-gradient-to-br from-white/10 to-transparent">
+                <div className="rounded-[23px] bg-[#020e4a]/80 p-8 backdrop-blur-3xl">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="h-3 w-3 rounded-full bg-brand-orange shadow-[0_0_12px_#FF6B00]" />
+                      <span className="text-xs font-bold uppercase tracking-widest text-white/70">Agent Processing</span>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-200/50">
-                      <ShieldCheck className="h-3 w-3" />
-                      Brand-safe
-                    </span>
+                    <span className="text-[10px] font-bold text-white/30">ID: 6E-9021</span>
                   </div>
 
-                  <div className="mt-8 space-y-8">
-                    <div className="group rounded-2xl bg-slate-50/50 p-4 transition-colors hover:bg-slate-50">
-                      <div className="flex items-center gap-2 text-xs font-bold text-sky-700">
-                        <Share2 className="h-3.5 w-3.5" />
-                        <span>SOCIAL · INSTAGRAM</span>
+                  <div className="mt-8 space-y-6">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter text-white/40">
+                        <span>Linguistic Engine</span>
+                        <span className="text-brand-orange">94%</span>
                       </div>
-                      <p className="mt-3 text-[15px] leading-relaxed text-slate-700">
-                        ✈️ Direct flights to your next winter escape. Fare rules apply — book on goIndiGo.in.
-                      </p>
-                      <div className="mt-3 flex gap-2 font-mono text-[10px] text-sky-800/60">
-                        <span>#goIndiGo</span>
-                        <span>#6ECreativeStudio</span>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+                        <div className="h-full w-[94%] animate-gradient bg-gradient-to-r from-brand-orange to-indigo-500" />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div className="rounded-2xl border border-slate-100 p-4">
-                        <div className="flex items-center gap-2 text-xs font-bold text-[#0C2340]">
-                          <LayoutTemplate className="h-3.5 w-3.5" />
-                          <span>BANNER</span>
+                    <div className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+                      <p className="text-[14px] leading-relaxed text-white/80 italic">
+                        "Experience seamless travel with IndiGo's new winter routes. Book now for exclusive 6E rewards."
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1, 2].map((i) => (
+                        <div key={i} className="aspect-square rounded-xl bg-white/5 ring-1 ring-white/5 flex items-center justify-center">
+                          <Plane className={`h-8 w-8 text-white/10 ${i === 1 ? 'animate-float' : 'animate-float-slow'}`} />
                         </div>
-                        <p className="mt-2 text-[13px] leading-relaxed text-slate-600">
-                          "Your next destination awaits" — subhead & CTA ready for export.
-                        </p>
-                      </div>
-                      <div className="rounded-2xl border border-slate-100 p-4">
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-                          <Sparkles className="h-3.5 w-3.5 text-cyan-500" />
-                          <span>IMAGE GEN</span>
-                        </div>
-                        <p className="mt-2 text-[13px] italic leading-relaxed text-slate-500">
-                          Sunrise boarding, cool blues, hero zone top-left...
-                        </p>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -168,142 +140,112 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* --- Pillars Section --- */}
-        <section className="relative bg-[#0C2340] py-24 lg:py-32">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(14,165,233,0.1),transparent_50%)]" />
-          <div className="relative mx-auto max-w-7xl px-6">
-            <div className="max-w-2xl">
-              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                The way marketing teams <br />
-                <span className="text-sky-400 text-pretty">actually ship content.</span>
-              </h2>
+        {/* --- PILLARS SECTION --- */}
+        <section className="relative py-32">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="text-center">
+              <h2 className="text-orange-gradient text-sm font-black uppercase tracking-[0.4em]">Propulsion</h2>
+              <p className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">Built for the 6E standard.</p>
             </div>
 
-            <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {pillars.map(({ icon: Icon, title, body }) => (
-                <div
-                  key={title}
-                  className="group rounded-3xl bg-white/5 p-8 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:ring-white/20"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-400 ring-1 ring-sky-500/20 group-hover:bg-sky-500 group-hover:text-white transition-colors">
-                    <Icon className="h-6 w-6" aria-hidden />
+            <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-3">
+              {pillars.map((pillar, idx) => (
+                <div key={idx} className="glass-card group p-10 animate-slide-up" style={{ animationDelay: `${idx * 0.15}s` }}>
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 ${pillar.color} ring-1 ring-white/10 group-hover:scale-110 transition-transform`}>
+                    <pillar.icon className="h-7 w-7" />
                   </div>
-                  <h3 className="mt-6 text-xl font-bold text-white">{title}</h3>
-                  <p className="mt-3 text-[15px] leading-relaxed text-slate-400">{body}</p>
+                  <h3 className="mt-8 text-2xl font-bold">{pillar.title}</h3>
+                  <p className="mt-4 text-white/50 leading-relaxed">
+                    {pillar.body}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* --- Workflow Section --- */}
-        <section className="py-24 lg:py-32">
+        {/* --- FEATURES GRID --- */}
+        <section className="bg-white/[0.02] py-32 ring-1 ring-white/5">
           <div className="mx-auto max-w-7xl px-6">
-            <div className="text-center">
-              <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-sky-600">The 6E Runway</h2>
-              <p className="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">From brief to brand-safe preview</p>
-            </div>
-
-            <div className="mt-16 overflow-hidden rounded-[2.5rem] bg-white/40 p-2 shadow-2xl shadow-slate-200/50 ring-1 ring-slate-200/50 backdrop-blur-md">
-              <div className="rounded-[2.25rem] bg-white px-6 py-12 lg:px-16">
-                <div className="relative">
-                  <div className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 bg-slate-100" />
-                  <div className="relative flex justify-between gap-4">
-                    {runway.map((label, idx) => (
-                      <div key={label} className="relative flex flex-col items-center">
-                        <div
-                          className={`flex h-10 w-10 items-center justify-center rounded-full border-4 border-white text-sm font-bold shadow-md ${
-                            idx === 2 ? 'bg-[#0C2340] text-white ring-4 ring-[#0C2340]/10' : 'bg-slate-200 text-slate-500'
-                          }`}
-                        >
-                          {idx + 1}
-                        </div>
-                        <span className="mt-4 text-[11px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-20 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-24">
-                  {engines.map(({ title, icon: Icon, line }) => (
-                    <div key={title} className="flex items-start gap-6 group">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-50 text-[#0C2340] ring-1 ring-slate-200/50 group-hover:bg-[#0C2340] group-hover:text-white transition-all">
-                        <Icon className="h-6 w-6" aria-hidden />
+            <div className="grid grid-cols-1 gap-20 lg:grid-cols-2 lg:items-center">
+              <div>
+                <h2 className="text-4xl font-extrabold tracking-tight leading-tight">
+                  One input. <br />
+                  <span className="text-orange-gradient">Total campaign coverage.</span>
+                </h2>
+                <p className="mt-6 text-lg text-white/60 leading-relaxed">
+                  Stop repeating yourself across creative desks. Our orchestration layer ensures every piece of content—from a tweet to a print brief—stays perfectly aligned with your core campaign message.
+                </p>
+                
+                <div className="mt-12 space-y-6">
+                  {engines.map((engine, idx) => (
+                    <div key={idx} className="flex items-center gap-6 group">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-800/40 text-white group-hover:bg-brand-orange transition-colors">
+                        <engine.icon className="h-5 w-5" />
                       </div>
                       <div>
-                        <h4 className="text-xl font-bold text-slate-900">{title}</h4>
-                        <p className="mt-2 text-[15px] leading-relaxed text-slate-600">{line}</p>
+                        <h4 className="font-bold text-lg">{engine.title}</h4>
+                        <p className="text-sm text-white/40">{engine.line}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
 
-        {/* --- CTA Section --- */}
-        <section className="relative overflow-hidden py-24 sm:py-32">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="relative isolate overflow-hidden bg-[#0C2340] px-6 py-24 text-center shadow-2xl rounded-3xl sm:px-16">
-              <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Ready to accelerate your marketing loop?
-              </h2>
-              <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
-                Join the internal preview and start generating brand-safe creatives for IndiGo campaigns.
-              </p>
-              <div className="mt-10 flex items-center justify-center gap-x-6">
-                <Link
-                  to={user ? '/projects' : '/login'}
-                  className="rounded-2xl bg-white px-10 py-4 text-sm font-bold text-[#0C2340] shadow-sm hover:bg-sky-50 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                >
-                  {user ? 'Continue to Studio' : 'Get Started'}
-                </Link>
-                <Link to="/projects" className="text-sm font-bold leading-6 text-white hover:text-sky-300 transition-colors">
-                  Learn more <span aria-hidden="true">→</span>
-                </Link>
-              </div>
-              <svg
-                viewBox="0 0 1024 1024"
-                className="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]"
-                aria-hidden="true"
-              >
-                <circle cx={512} cy={512} r={512} fill="url(#gradient)" fillOpacity="0.15" />
-                <defs>
-                  <radialGradient id="gradient">
-                    <stop stopColor="#0EA5E9" />
-                    <stop offset={1} stopColor="#0C2340" />
-                  </radialGradient>
-                </defs>
-              </svg>
-            </div>
-          </div>
-        </section>
-
-        {/* --- Footer --- */}
-        <footer className="mx-auto max-w-7xl px-6 pb-12">
-          <div className="border-t border-slate-200 pt-12">
-            <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0C2340] text-white">
-                  <Plane className="h-5 w-5" />
+              <div className="relative aspect-square">
+                <div className="absolute inset-0 bg-brand-orange/20 blur-[100px] animate-pulse" />
+                <div className="relative h-full w-full glass-card flex items-center justify-center border-dashed">
+                  <div className="animate-orbit p-8">
+                     <div className="h-32 w-32 rounded-3xl bg-indigo-600 flex items-center justify-center shadow-[0_0_50px_rgba(79,70,229,0.5)]">
+                        <Plane className="h-16 w-16 -rotate-45" />
+                     </div>
+                  </div>
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                    <span className="text-4xl font-black text-brand-orange drop-shadow-lg">6E</span>
+                  </div>
                 </div>
-                <span className="text-xl font-bold tracking-tight text-slate-900">6E Creative Studio</span>
               </div>
-              <nav className="flex gap-8 text-sm font-semibold text-slate-600">
-                <Link to="/login" className="hover:text-[#0C2340]">Sign in</Link>
-                <Link to="/projects" className="hover:text-[#0C2340]">Projects</Link>
-                <Link to="/workspace" className="hover:text-[#0C2340]">Workspace</Link>
-              </nav>
             </div>
-            <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-slate-100 pt-8 md:flex-row">
-              <p className="text-xs text-slate-500">
-                © {new Date().getFullYear()} IndiGo Internal Hackathon. Not for public campaign use.
+          </div>
+        </section>
+
+        {/* --- CTA --- */}
+        <section className="py-32">
+          <div className="mx-auto max-w-5xl px-6">
+            <div className="relative overflow-hidden rounded-[40px] bg-indigo-800 p-12 text-center shadow-2xl ring-1 ring-white/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-orange/20 via-transparent to-indigo-900/40" />
+              <h2 className="relative text-4xl font-black sm:text-5xl leading-tight">
+                Ready for Takeoff?
+              </h2>
+              <p className="relative mt-6 text-xl text-indigo-100 max-w-2xl mx-auto">
+                Join the internal IndiGo hackathon studio and start building your first AI-powered campaign today.
               </p>
-              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                <ShieldCheck className="h-3 w-3" />
-                Brand Safety Certified
+              <div className="relative mt-12 flex flex-col items-center gap-6 sm:flex-row justify-center">
+                <Link to="/login" className="btn-orange text-lg px-12 py-5 w-full sm:w-auto">
+                  Sign in to Start
+                </Link>
+                <div className="flex items-center gap-2 text-sm font-bold text-indigo-200">
+                  <CheckCircle2 className="h-5 w-5 text-brand-orange" />
+                  Internal Access Only
+                </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- FOOTER --- */}
+        <footer className="border-t border-white/5 py-12">
+          <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-3">
+              <Plane className="h-6 w-6 text-brand-orange" />
+              <span className="font-black text-xl tracking-tighter">6E CREATIVE</span>
+            </div>
+            <p className="text-xs font-bold text-white/20 uppercase tracking-[0.2em]">
+              © 2024 IndiGo Airlines · Internal Hackathon Project
+            </p>
+            <div className="flex gap-8 text-xs font-bold uppercase tracking-widest text-white/40">
+              <a href="#" className="hover:text-brand-orange transition-colors">Privacy</a>
+              <a href="#" className="hover:text-brand-orange transition-colors">Safety</a>
             </div>
           </div>
         </footer>

@@ -5,23 +5,33 @@ interface LandingNavProps {
   userSignedIn: boolean
 }
 
-/** Minimal bar — home is one canvas, no in-page section jumps. */
 export function LandingNav({ userSignedIn }: LandingNavProps) {
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4 sm:px-6">
-      <div className="pointer-events-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border border-white/50 bg-white/70 px-4 py-3 shadow-lg shadow-slate-900/5 backdrop-blur-xl supports-[backdrop-filter]:bg-white/55">
-        <Link to="/" className="flex items-center gap-2.5 font-semibold tracking-tight text-[#0C2340]">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0C2340] text-white shadow-lg shadow-[#0C2340]/20">
-            <Plane className="h-[18px] w-[18px]" aria-hidden />
-          </span>
-          <span className="text-[15px] sm:text-base">6E Creative Studio</span>
+    <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-6 pt-6 animate-fade-in">
+      <div className="flex w-full max-w-7xl items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-6 py-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-2xl ring-1 ring-white/10">
+        <Link to="/" className="group flex items-center gap-3 font-bold tracking-tight">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-800 text-white shadow-lg shadow-indigo-900/50 transition-transform group-hover:scale-105 group-active:scale-95">
+            <Plane className="h-5 w-5 -rotate-45" aria-hidden />
+          </div>
+          <div className="flex flex-col leading-none">
+            <span className="text-lg text-white">6E Studio</span>
+            <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-brand-orange">Creative</span>
+          </div>
         </Link>
-        <Link
-          to={userSignedIn ? '/projects' : '/login'}
-          className="rounded-xl bg-[#0C2340] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-[#0C2340]/25 transition hover:bg-[#0a1c34]"
-        >
-          {userSignedIn ? 'Open studio' : 'Sign in'}
-        </Link>
+
+        <div className="flex items-center gap-6">
+          {!userSignedIn && (
+            <Link to="/login" className="hidden text-sm font-bold text-white/70 transition hover:text-white sm:block">
+              Sign In
+            </Link>
+          )}
+          <Link
+            to={userSignedIn ? '/projects' : '/login'}
+            className="btn-orange text-sm"
+          >
+            <span>{userSignedIn ? 'Open Studio' : 'Get Started'}</span>
+          </Link>
+        </div>
       </div>
     </header>
   )

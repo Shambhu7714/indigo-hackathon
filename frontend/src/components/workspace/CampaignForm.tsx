@@ -1,15 +1,21 @@
-import { Send } from 'lucide-react'
-
-const campaignTypes = ['Destination', 'Sale', 'Brand', 'Product launch', 'Partnership', 'Seasonal']
+import { Send, Zap, Info } from 'lucide-react'
+import type { CampaignType } from '@/types'
 
 interface CampaignFormProps {
-  campaignType: string
+  campaignType: CampaignType
   description: string
-  onCampaignTypeChange: (v: string) => void
+  onCampaignTypeChange: (v: CampaignType) => void
   onDescriptionChange: (v: string) => void
   onSubmit: () => void
   loading: boolean
 }
+
+const types: { value: CampaignType; label: string; desc: string }[] = [
+  { value: 'social', label: 'Social Burst', desc: 'Instagram, Twitter, FB content' },
+  { value: 'copy', label: 'Copy Deck', desc: 'Web, CRM, and internal briefs' },
+  { value: 'banner', label: 'Visual Display', desc: 'Google Ads & Banner specs' },
+  { value: 'image', label: 'Gen Assets', desc: 'AI Image generation prompts' },
+]
 
 export function CampaignForm({
   campaignType,
@@ -19,65 +25,85 @@ export function CampaignForm({
   onSubmit,
   loading,
 }: CampaignFormProps) {
-  const canSubmit = description.trim().length > 0
-
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-gray-900">Campaign Details</h2>
-      <p className="mt-1 text-sm text-gray-500">Tell us what you are building — our agents will align output to your brief.</p>
+    <div className="glass-card flex flex-col p-8 shadow-2xl">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-orange/20 text-brand-orange">
+          <Zap className="h-4 w-4 fill-brand-orange" />
+        </div>
+        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-white">Intake Controls</h2>
+      </div>
 
-      <div className="mt-6 space-y-5">
-        <div>
-          <label htmlFor="campaign-type" className="block text-sm font-medium text-gray-700">
-            Campaign Type <span className="text-red-600">*</span>
+      <div className="space-y-8">
+        {/* Campaign Type Selector */}
+        <div className="space-y-3">
+          <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">
+            Engine Configuration
           </label>
-          <select
-            id="campaign-type"
-            value={campaignType}
-            onChange={(e) => onCampaignTypeChange(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          >
-            {campaignTypes.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
+          <div className="grid grid-cols-1 gap-2">
+            {types.map((t) => (
+              <button
+                key={t.value}
+                onClick={() => onCampaignTypeChange(t.value)}
+                className={`flex items-start gap-4 rounded-2xl p-4 text-left transition-all ring-1 ${
+                  campaignType === t.value
+                    ? 'bg-brand-orange/10 ring-brand-orange/40'
+                    : 'bg-white/5 ring-white/5 hover:bg-white/10'
+                }`}
+              >
+                <div className={`mt-1 h-2 w-2 rounded-full ${campaignType === t.value ? 'bg-brand-orange shadow-[0_0_8px_#FF6B00]' : 'bg-white/20'}`} />
+                <div>
+                  <div className={`text-sm font-bold ${campaignType === t.value ? 'text-white' : 'text-white/60'}`}>{t.label}</div>
+                  <div className="text-[10px] text-white/30 font-medium">{t.desc}</div>
+                </div>
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="campaign-desc" className="block text-sm font-medium text-gray-700">
-            Describe your campaign <span className="text-red-600">*</span>
+        {/* Prompt Input */}
+        <div className="space-y-3">
+          <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">
+            Campaign Narrative
           </label>
-          <textarea
-            id="campaign-desc"
-            rows={7}
-            value={description}
-            onChange={(e) => onDescriptionChange(e.target.value)}
-            placeholder="e.g. Promote winter getaways from Delhi with emphasis on direct flights and family fares…"
-            className="mt-1.5 w-full resize-y rounded-lg border border-gray-300 px-3 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          />
+          <div className="relative group">
+            <textarea
+              value={description}
+              onChange={(e) => onDescriptionChange(e.target.value)}
+              placeholder="e.g. Winter sale for flights to Maldives. Focus on family travel and early-bird discounts..."
+              rows={6}
+              className="w-full resize-none rounded-2xl border border-white/5 bg-white/5 p-5 text-sm text-white placeholder:text-white/20 focus:border-brand-orange/50 focus:outline-none focus:ring-4 focus:ring-brand-orange/5 transition-all"
+            />
+          </div>
         </div>
 
+        {/* Info Box */}
+        <div className="flex gap-3 rounded-2xl bg-indigo-500/5 p-4 ring-1 ring-indigo-500/10">
+          <Info className="h-4 w-4 shrink-0 text-sky-400" />
+          <p className="text-[10px] leading-relaxed text-white/40">
+            Agents will use the 6E brand guidelines to verify safety and tone compliance.
+          </p>
+        </div>
+
+        {/* Action Button */}
         <button
-          type="button"
-          disabled={!canSubmit || loading}
           onClick={onSubmit}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#0C2340] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0a1c34] disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={loading || !description.trim()}
+          className="btn-orange w-full py-5 text-base flex items-center justify-center gap-3 disabled:opacity-40 group"
         >
           {loading ? (
             <>
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              Creating…
+              <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Orchestrating...</span>
             </>
           ) : (
             <>
-              <Send className="h-4 w-4" aria-hidden />
-              Start Creating
+              <Send className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              <span>Run Engines</span>
             </>
           )}
         </button>
       </div>
-    </section>
+    </div>
   )
 }

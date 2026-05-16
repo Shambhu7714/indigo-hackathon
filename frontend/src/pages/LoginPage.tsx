@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { LandingBackground } from '@/components/landing/LandingBackground'
 import {
   ArrowRight,
   Eye,
@@ -10,6 +11,7 @@ import {
   Mail,
   Plane,
   User,
+  ShieldCheck,
 } from 'lucide-react'
 
 type Tab = 'login' | 'signup'
@@ -44,65 +46,64 @@ export function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-white to-sky-50">
-      {/* Background blobs */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute -top-32 -left-32 h-[520px] w-[520px] rounded-full bg-[#0C2340]/[0.06] blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 h-[440px] w-[440px] rounded-full bg-sky-400/10 blur-3xl" />
-      </div>
+    <div className="relative flex min-h-screen flex-col overflow-hidden text-white">
+      <LandingBackground />
 
       {/* Nav */}
-      <header className="px-6 pt-6">
-        <Link to="/" className="inline-flex items-center gap-2.5 font-semibold text-[#0C2340]">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0C2340] text-white shadow-lg shadow-[#0C2340]/25">
-            <Plane className="h-4 w-4" />
-          </span>
-          <span className="text-[15px]">6E Creative Studio</span>
+      <header className="px-8 pt-8 animate-fade-in">
+        <Link to="/" className="group inline-flex items-center gap-3 font-bold">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-800 text-white shadow-lg shadow-indigo-900/40 transition-transform group-hover:scale-105">
+            <Plane className="h-5 w-5 -rotate-45" />
+          </div>
+          <span className="text-xl tracking-tighter">6E Studio</span>
         </Link>
       </header>
 
-      {/* Card */}
-      <div className="flex flex-1 items-center justify-center px-4 py-16">
-        <div className="w-full max-w-md">
-          {/* Glass card */}
-          <div className="overflow-hidden rounded-3xl bg-white/70 shadow-2xl shadow-slate-300/30 ring-1 ring-slate-200/60 backdrop-blur-2xl">
-            {/* Tab switcher */}
-            <div className="flex">
+      {/* Auth Container */}
+      <div className="flex flex-1 items-center justify-center px-4 py-12 lg:py-20">
+        <div className="w-full max-w-md animate-slide-up">
+          
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+              {tab === 'login' ? 'Welcome back.' : 'Join the fleet.'}
+            </h1>
+            <p className="mt-3 text-white/50 text-sm font-medium">
+              {tab === 'login' 
+                ? 'Sign in to access your creative workspace.' 
+                : 'Create your internal account to start building.'}
+            </p>
+          </div>
+
+          {/* Glass Card */}
+          <div className="glass-card overflow-hidden shadow-2xl">
+            {/* Custom Tab Switcher */}
+            <div className="flex p-2 gap-1 border-b border-white/5 bg-white/5">
               {(['login', 'signup'] as Tab[]).map((t) => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => { setTab(t); setError(null) }}
-                  className={`flex-1 py-4 text-sm font-bold capitalize tracking-wide transition-colors ${
+                  className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all rounded-xl ${
                     tab === t
-                      ? 'bg-white text-[#0C2340] shadow-sm'
-                      : 'bg-slate-50/80 text-slate-500 hover:text-slate-700'
+                      ? 'bg-white/10 text-brand-orange shadow-inner ring-1 ring-white/10'
+                      : 'text-white/40 hover:text-white/70 hover:bg-white/[0.02]'
                   }`}
                 >
-                  {t === 'login' ? 'Sign In' : 'Create Account'}
+                  {t === 'login' ? 'Sign In' : 'Register'}
                 </button>
               ))}
             </div>
 
-            <div className="px-8 pb-10 pt-8">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-                {tab === 'login' ? 'Welcome back' : 'Join 6E Studio'}
-              </h1>
-              <p className="mt-1.5 text-sm text-slate-500">
-                {tab === 'login'
-                  ? 'Sign in to access your campaign workspace.'
-                  : 'Create your account and start building campaigns.'}
-              </p>
-
-              <form onSubmit={onSubmit} className="mt-8 space-y-5">
+            <div className="px-8 py-10">
+              <form onSubmit={onSubmit} className="space-y-6">
                 {/* Full name — signup only */}
                 {tab === 'signup' && (
-                  <div className="group">
-                    <label htmlFor="fullName" className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-slate-500">
+                  <div className="space-y-2 animate-fade-in">
+                    <label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">
                       Full Name
                     </label>
-                    <div className="relative">
-                      <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <div className="relative group">
+                      <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/20 group-focus-within:text-brand-orange transition-colors" />
                       <input
                         id="fullName"
                         type="text"
@@ -111,19 +112,19 @@ export function LoginPage() {
                         placeholder="Akshay Malik"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white/80 py-3 pl-10 pr-4 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#0C2340] focus:outline-none focus:ring-2 focus:ring-[#0C2340]/10 transition"
+                        className="w-full rounded-2xl border border-white/5 bg-white/5 py-4 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:border-brand-orange/50 focus:outline-none focus:ring-4 focus:ring-brand-orange/5 transition-all"
                       />
                     </div>
                   </div>
                 )}
 
                 {/* Email */}
-                <div>
-                  <label htmlFor="email" className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-slate-500">
-                    Email
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">
+                    Work Email
                   </label>
-                  <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/20 group-focus-within:text-brand-orange transition-colors" />
                     <input
                       id="email"
                       type="email"
@@ -132,93 +133,81 @@ export function LoginPage() {
                       placeholder="you@goindigo.in"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white/80 py-3 pl-10 pr-4 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#0C2340] focus:outline-none focus:ring-2 focus:ring-[#0C2340]/10 transition"
+                      className="w-full rounded-2xl border border-white/5 bg-white/5 py-4 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:border-brand-orange/50 focus:outline-none focus:ring-4 focus:ring-brand-orange/5 transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Password */}
-                <div>
-                  <label htmlFor="password" className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-slate-500">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center ml-1">
+                    <label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                      Password
+                    </label>
+                    {tab === 'login' && (
+                      <button type="button" className="text-[10px] font-bold text-brand-orange/70 hover:text-brand-orange transition-colors">
+                        Forgot?
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative group">
+                    <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/20 group-focus-within:text-brand-orange transition-colors" />
                     <input
                       id="password"
                       type={showPass ? 'text' : 'password'}
                       required
                       autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
-                      placeholder={tab === 'signup' ? 'Min 8 characters' : '••••••••'}
+                      placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white/80 py-3 pl-10 pr-12 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#0C2340] focus:outline-none focus:ring-2 focus:ring-[#0C2340]/10 transition"
+                      className="w-full rounded-2xl border border-white/5 bg-white/5 py-4 pl-12 pr-12 text-sm text-white placeholder:text-white/20 focus:border-brand-orange/50 focus:outline-none focus:ring-4 focus:ring-brand-orange/5 transition-all"
                     />
                     <button
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPass((v) => !v)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
                     >
                       {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
 
-                {/* Error */}
+                {/* Error Alert */}
                 {error && (
-                  <div
-                    role="alert"
-                    className="flex items-start gap-2.5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100"
-                  >
-                    <span className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-red-200 text-center text-xs font-bold leading-4 text-red-700">!</span>
-                    {error}
+                  <div role="alert" className="flex items-start gap-3 rounded-2xl bg-red-500/10 border border-red-500/20 px-4 py-4 text-sm text-red-400 animate-fade-in">
+                    <div className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-red-500/20 text-center text-[10px] font-black leading-4 text-red-500">!</div>
+                    <p className="font-medium">{error}</p>
                   </div>
                 )}
 
-                {/* Submit */}
+                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="group flex w-full items-center justify-center gap-2 rounded-xl bg-[#0C2340] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#0C2340]/20 transition-all hover:bg-[#0a1c34] hover:shadow-[#0C2340]/30 disabled:opacity-60"
+                  className="btn-orange w-full py-5 text-base flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
                 >
                   {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
                     <>
-                      {tab === 'login' ? 'Sign In' : 'Create Account'}
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <span>{tab === 'login' ? 'Sign In to Studio' : 'Create 6E Account'}</span>
+                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </>
                   )}
                 </button>
               </form>
 
-              <div className="mt-8 flex items-center gap-4">
-                <div className="h-px flex-1 bg-slate-200" />
-                <span className="text-xs text-slate-400">or</span>
-                <div className="h-px flex-1 bg-slate-200" />
+              {/* Security Hint */}
+              <div className="mt-10 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/20">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                <span>Internal 6E Security Enabled</span>
               </div>
-
-              <p className="mt-6 text-center text-sm text-slate-500">
-                {tab === 'login' ? "Don't have an account? " : 'Already have an account? '}
-                <button
-                  type="button"
-                  onClick={() => { setTab(tab === 'login' ? 'signup' : 'login'); setError(null) }}
-                  className="font-bold text-[#0C2340] hover:underline"
-                >
-                  {tab === 'login' ? 'Create one' : 'Sign in'}
-                </button>
-              </p>
-
-              <p className="mt-4 text-center text-[11px] text-slate-400">
-                <Link to="/" className="hover:text-[#0C2340]">← Back to home</Link>
-              </p>
             </div>
           </div>
 
-          {/* Hint */}
-          <p className="mt-6 text-center text-xs text-slate-400">
-            Internal hackathon preview · not production IndiGo systems.
+          <p className="mt-12 text-center text-xs font-bold text-white/20 uppercase tracking-[0.2em]">
+            IndiGo Internal Systems · Hackathon Preview
           </p>
         </div>
       </div>
