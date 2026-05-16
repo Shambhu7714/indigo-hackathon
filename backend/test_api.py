@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 # Load .env file
 load_dotenv()
 
-MODEL_NAME = os.getenv("Model_name")
-URL = os.getenv("Urls")
-API_KEY = os.getenv("api")
+MODEL_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-5-mini4")
+URL = f"{os.getenv('AZURE_OPENAI_ENDPOINT')}openai/deployments/{MODEL_NAME}/chat/completions?api-version={os.getenv('AZURE_OPENAI_VERSION')}"
+API_KEY = os.getenv("AZURE_OPENAI_KEY")
 
 print(f"Testing with:")
 print(f"Model: {MODEL_NAME}")

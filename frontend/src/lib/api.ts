@@ -80,6 +80,7 @@ export const authApi = {
 // ─── Campaign / AI ──────────────────────────────────────────────────────────
 
 export interface GenerationRequest {
+  projectId: string
   campaignType: string
   description: string
   targetAgentId?: string

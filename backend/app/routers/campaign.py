@@ -8,6 +8,9 @@ from google import genai
 from google.genai import types
 from PIL import Image
 import io
+import uuid
+from app.models.Instagram import run_instagram_agent_pipeline
+from app.models.linkedin import run_indigo_pipeline
 
 from app.core.config import settings
 from app.db.database import get_db
@@ -38,9 +41,17 @@ async def generate_campaign_content(req: CampaignRequest, db: Session = Depends(
     
     # Define Prompt
     if req.targetAgentId == "social":
-        prompt = f"Act as an IndiGo Airlines social media manager. Generate 3 social media posts (Instagram, Twitter, LinkedIn) for a campaign about: {req.description}. Format as JSON."
+        prompt = (
+            f"Act as an IndiGo Airlines social media strategist. "
+            f"Generate 3 creative post ideas (Instagram, Twitter, LinkedIn) for a campaign about: {req.description}. "
+            f"Use a professional, friendly, and 'on-time' brand tone. Include relevant hashtags."
+        )
     elif req.targetAgentId == "copywriting":
-        prompt = f"Act as a professional copywriter for IndiGo Airlines. Generate a copy deck for: {req.description}."
+        prompt = (
+            f"Act as a lead copywriter for IndiGo Airlines. "
+            f"Write a premium copy deck (Headline, Subhead, and Body) for a new campaign: {req.description}. "
+            f"Emphasize reliability, luxury, and the 6E experience."
+        )
     elif req.targetAgentId == "banner":
         prompt = f"Generate banner specifications for an IndiGo campaign: {req.description}."
     elif req.targetAgentId == "imageGen":
@@ -98,10 +109,45 @@ async def generate_campaign_content(req: CampaignRequest, db: Session = Depends(
                 "imageUrl": image_url
             }
 
+        elif req.targetAgentId == "social":
+            # Call the specialized Instagram pipeline
+            # Note: This is a multi-agent pipeline (Copywriter -> Visual Director -> Gemini)
+            refs = [
+                "app/models/Image_ref/ref1.jpeg",
+                "app/models/Image_ref/ref2.jpeg",
+                "app/models/Image_ref/ref3.png"
+            ]
+            # Convert relative paths to absolute or relative to backend root
+            refs = [os.path.join(os.getcwd(), r) for r in refs]
+            
+            result = run_instagram_agent_pipeline(req.description, reference_image_paths=refs)
+            
+            caption = result["caption"]
+            local_path = result["local_path"] # This is now in 'generations/'
+            filename = os.path.basename(local_path)
+            image_url = f"http://localhost:8000/generations/{filename}"
+
+            # Save to DB
+            new_gen = CampaignGeneration(
+                id=str(uuid.uuid4()),
+                project_id=req.projectId,
+                agent_id=req.targetAgentId,
+                prompt=prompt,
+                content=caption
+            )
+            db.add(new_gen)
+            db.commit()
+
+            return {
+                "agent_id": req.targetAgentId,
+                "content": caption,
+                "imageUrl": image_url
+            }
+
         else:
-            # Text generation
+            # Text generation using stable 1.5 flash
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
+                model="gemini-1.5-flash",
                 contents=[prompt],
             )
             text_result = response.text

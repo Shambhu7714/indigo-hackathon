@@ -1,7 +1,11 @@
 import requests
+import os
+from dotenv import load_dotenv
 
-API_KEY = "AIzaSyD-ZLqNEGB_rQXcF_DuKK91TDMEqgKFa0A"
-MODEL = "gemini-2.5-flash"
+load_dotenv()
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+MODEL = "gemini-1.5-flash"
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent?key={API_KEY}"
 
 def ask(prompt: str) -> str:

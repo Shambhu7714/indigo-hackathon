@@ -10,6 +10,11 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-1.5-flash"
 
+    AZURE_OPENAI_KEY: str = ""
+    AZURE_OPENAI_ENDPOINT: str = ""
+    AZURE_OPENAI_VERSION: str = "2024-05-01-preview"
+    AZURE_OPENAI_DEPLOYMENT: str = "gpt-5-mini4"
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 

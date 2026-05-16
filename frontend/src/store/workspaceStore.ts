@@ -131,7 +131,7 @@ export const useWorkspaceStore = create<WorkspaceSlice>()(
           })
 
         const res = await campaignApi.generate(
-          { campaignType, description, targetAgentId: targetAgentId || undefined },
+          { projectId, campaignType, description, targetAgentId: targetAgentId || undefined },
           useAuthStore.getState().token || undefined
         )
 
