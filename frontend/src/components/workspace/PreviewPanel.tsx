@@ -1,25 +1,81 @@
-import { Loader2, Copy, Check, Terminal, ExternalLink, ShieldCheck } from 'lucide-react'
-import { useState } from 'react'
-import type { CampaignType, RunState } from '@/types'
+import { Loader2, Copy, Check, Terminal, ExternalLink, ShieldCheck, Share2, PenLine, LayoutTemplate, Sparkles } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import type { AgentId, AgentResults, AgentStatus } from '@/types'
 
 interface PreviewPanelProps {
-  activeTab: CampaignType
-  runState: RunState
-  results: Record<CampaignType, string>
+  activeTab: AgentId
+  runState: Record<AgentId, AgentStatus>
+  results: AgentResults
   hasGenerated: boolean
+}
+
+interface ContentResult {
+  jsx: ReactNode
+  text: string
 }
 
 export function PreviewPanel({ activeTab, runState, results, hasGenerated }: PreviewPanelProps) {
   const [copied, setCopied] = useState(false)
-  const content = results[activeTab]
+  const currentStatus = runState[activeTab]
+
+  function getRenderedContent(): ContentResult {
+    if (activeTab === 'social') {
+      const text = results.social.map(p => `[${p.platform}]\n${p.text}\n${p.hashtags.join(' ')}`).join('\n\n---\n\n')
+      return { jsx: <div className="whitespace-pre-wrap">{text}</div>, text }
+    }
+    if (activeTab === 'copywriting') {
+      const text = results.copywriting.map(c => `### ${c.title}\n${c.body}`).join('\n\n')
+      return { jsx: <div className="whitespace-pre-wrap">{text}</div>, text }
+    }
+    if (activeTab === 'banner') {
+      const b = results.banner
+      if (!b) return { jsx: null, text: '' }
+      const text = `### ${b.headline}\n${b.subhead}\n\n**CTA:** ${b.cta}\n**Sizes:** ${b.dimensions}\n\n*Notes: ${b.notes}*`
+      return { jsx: <div className="whitespace-pre-wrap">{text}</div>, text }
+    }
+    if (activeTab === 'imageGen') {
+      const i = results.imageGen
+      if (!i) return { jsx: null, text: '' }
+      return {
+        jsx: (
+          <div className="space-y-6 animate-fade-in">
+            {i.imageUrl && (
+              <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+                <img
+                  src={i.imageUrl}
+                  alt={i.suggestedAlt}
+                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#020e4a]/80 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-brand-orange/90 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg">
+                    AI Generated Visual
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
+              <h4 className="text-xs font-black uppercase tracking-widest text-white/40 mb-3">Creative Prompt</h4>
+              <p className="text-sm leading-relaxed text-white/70 italic">"{i.description}"</p>
+            </div>
+          </div>
+        ),
+        text: i.description
+      }
+    }
+    return { jsx: null, text: '' }
+  }
+
+  const { jsx, text: copyText } = getRenderedContent()
 
   function copyToClipboard() {
-    navigator.clipboard.writeText(content)
+    if (!copyText) return
+    navigator.clipboard.writeText(copyText)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  if (runState === 'running') {
+  if (currentStatus === 'pending' || currentStatus === 'running') {
     return (
       <div className="glass-card flex min-h-[600px] flex-col items-center justify-center border-dashed border-brand-orange/30">
         <div className="relative">
@@ -32,7 +88,7 @@ export function PreviewPanel({ activeTab, runState, results, hasGenerated }: Pre
     )
   }
 
-  if (!hasGenerated) {
+  if (!hasGenerated || !jsx) {
     return (
       <div className="glass-card flex min-h-[600px] flex-col items-center justify-center p-12 text-center border-dashed border-white/10">
         <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white/5 text-white/10">
@@ -40,18 +96,28 @@ export function PreviewPanel({ activeTab, runState, results, hasGenerated }: Pre
         </div>
         <h3 className="mt-8 text-2xl font-black">Waiting for Flight Path.</h3>
         <p className="mt-3 max-w-xs text-white/40 font-medium">
-          Enter your campaign narrative on the left to start the AI orchestration engine.
+          Enter your campaign narrative on the left to start the AI orchestration engine for {activeTab}.
         </p>
       </div>
     )
   }
+
+  const icons = {
+    social: Share2,
+    copywriting: PenLine,
+    banner: LayoutTemplate,
+    imageGen: Sparkles
+  }
+  const ActiveIcon = icons[activeTab]
 
   return (
     <div className="animate-fade-in space-y-6">
       {/* Canvas Controls */}
       <div className="flex items-center justify-between px-2">
         <div className="flex items-center gap-3">
-          <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+          <div className="flex h-6 w-6 items-center justify-center rounded bg-brand-orange/10 text-brand-orange">
+             <ActiveIcon className="h-3.5 w-3.5" />
+          </div>
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Canvas Output · {activeTab}</span>
         </div>
         <div className="flex items-center gap-2">
@@ -83,8 +149,8 @@ export function PreviewPanel({ activeTab, runState, results, hasGenerated }: Pre
           </div>
 
           <div className="prose prose-invert max-w-none">
-            <div className="whitespace-pre-wrap text-lg leading-relaxed text-white/90 font-medium selection:bg-brand-orange/50">
-              {content || `No ${activeTab} content generated for this campaign yet.`}
+            <div className="text-lg leading-relaxed text-white/90 font-medium selection:bg-brand-orange/50">
+              {jsx}
             </div>
           </div>
         </div>

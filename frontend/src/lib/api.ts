@@ -76,3 +76,23 @@ export const authApi = {
     return request<{ message: string }>('POST', '/auth/logout', undefined, token)
   },
 }
+
+// ─── Campaign / AI ──────────────────────────────────────────────────────────
+
+export interface GenerationRequest {
+  campaignType: string
+  description: string
+  targetAgentId?: string
+}
+
+export interface GenerationResponse {
+  agent_id: string
+  content: string
+  imageUrl?: string
+}
+
+export const campaignApi = {
+  generate(req: GenerationRequest, token?: string) {
+    return request<GenerationResponse>('POST', '/campaign/generate', req, token)
+  },
+}

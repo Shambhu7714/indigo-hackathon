@@ -11,13 +11,14 @@ function buildFromInput(campaignType: string, description: string) {
 }
 
 export async function runMockAgents(
-  input: { campaignType: string; description: string },
+  input: { campaignType: string; description: string; targetAgentId?: AgentId },
   handlers: {
     onAgentStart: (id: AgentId) => void
     onAgentDone: (id: AgentId, partial: Partial<AgentResults>) => void
   }
 ) {
   const { desc, type } = buildFromInput(input.campaignType, input.description)
+  const target = input.targetAgentId
 
   const social: SocialPost[] = [
     {
@@ -37,9 +38,11 @@ export async function runMockAgents(
     },
   ]
 
-  handlers.onAgentStart('social')
-  await wait(450)
-  handlers.onAgentDone('social', { social })
+  if (!target || target === 'social') {
+    handlers.onAgentStart('social')
+    await wait(450)
+    handlers.onAgentDone('social', { social })
+  }
 
   const copywriting: CopyBlock[] = [
     {
@@ -56,9 +59,11 @@ export async function runMockAgents(
     },
   ]
 
-  handlers.onAgentStart('copywriting')
-  await wait(500)
-  handlers.onAgentDone('copywriting', { copywriting })
+  if (!target || target === 'copywriting') {
+    handlers.onAgentStart('copywriting')
+    await wait(500)
+    handlers.onAgentDone('copywriting', { copywriting })
+  }
 
   const banner: BannerSpec = {
     headline: type === 'Destination' ? 'Your next destination awaits' : `Campaign: ${type}`,
@@ -69,9 +74,11 @@ export async function runMockAgents(
       'Export after brand review. Use approved IndiGo palette, logo clear space, and partner co-mark rules where applicable.',
   }
 
-  handlers.onAgentStart('banner')
-  await wait(420)
-  handlers.onAgentDone('banner', { banner })
+  if (!target || target === 'banner') {
+    handlers.onAgentStart('banner')
+    await wait(420)
+    handlers.onAgentDone('banner', { banner })
+  }
 
   const imageGen: ImageGenResult = {
     description: `Hero visual: travellers at sunrise boarding, soft blues and whites, subtle 6E accent, headline zone top-left, brand-safe — ${desc.slice(0, 100)}`,
@@ -79,7 +86,9 @@ export async function runMockAgents(
     suggestedAlt: `IndiGo ${type} campaign visual inspired by: ${desc.slice(0, 80)}`,
   }
 
-  handlers.onAgentStart('imageGen')
-  await wait(550)
-  handlers.onAgentDone('imageGen', { imageGen })
+  if (!target || target === 'imageGen') {
+    handlers.onAgentStart('imageGen')
+    await wait(550)
+    handlers.onAgentDone('imageGen', { imageGen })
+  }
 }

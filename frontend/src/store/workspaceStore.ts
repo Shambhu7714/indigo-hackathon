@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { AgentId, AgentResults, AgentRunState, AgentStatus } from '@/types'
-import { runMockAgents } from '@/mocks/agents'
+import { campaignApi } from '@/lib/api'
+import { useAuthStore } from './authStore'
 
 const initialRun: AgentRunState = {
   social: 'idle',
@@ -18,7 +19,7 @@ const emptyResults: AgentResults = {
 }
 
 interface CampaignDraft {
-  campaignType: string
+  campaignType: AgentId
   description: string
 }
 
@@ -36,12 +37,12 @@ interface WorkspaceSlice {
   getOrInit: (projectId: string) => NonNullable<WorkspaceSlice['byProjectId'][string]>
   setCampaign: (projectId: string, patch: Partial<CampaignDraft>) => void
   setActiveTab: (projectId: string, tab: AgentId) => void
-  startCreating: (projectId: string) => Promise<void>
+  startCreating: (projectId: string, targetAgentId?: AgentId) => Promise<void>
   resetProject: (projectId: string) => void
 }
 
 const defaultCampaign = (): CampaignDraft => ({
-  campaignType: 'Destination',
+  campaignType: 'social',
   description: '',
 })
 
@@ -93,28 +94,30 @@ export const useWorkspaceStore = create<WorkspaceSlice>()(
           return { byProjectId: next }
         }),
 
-      startCreating: async (projectId) => {
+      startCreating: async (projectId, targetAgentId) => {
         const entry = ensureEntry({ ...get().byProjectId }, projectId)
-        const { campaignType, description } = entry.campaign
+        const { description } = entry.campaign
+        const campaignType = entry.campaign.campaignType as any
         if (!description.trim()) return
 
-        const running: AgentRunState = {
-          social: 'pending',
-          copywriting: 'pending',
-          banner: 'pending',
-          imageGen: 'pending',
-        }
+        // If no target, run all. If target, only run target.
+        const agentsToRun: AgentId[] = targetAgentId 
+          ? [targetAgentId] 
+          : ['social', 'copywriting', 'banner', 'imageGen']
 
         set((s) => {
           const next = { ...s.byProjectId }
           const e = ensureEntry(next, projectId)
-          e.runState = running
-          e.results = {
-            social: [],
-            copywriting: [],
-            banner: null,
-            imageGen: null,
-          }
+          
+          // Only reset the agents we are about to run
+          agentsToRun.forEach(id => {
+            e.runState[id] = 'pending'
+            if (id === 'social') e.results.social = []
+            if (id === 'copywriting') e.results.copywriting = []
+            if (id === 'banner') e.results.banner = null
+            if (id === 'imageGen') e.results.imageGen = null
+          })
+
           e.hasGenerated = false
           return { byProjectId: next }
         })
@@ -127,25 +130,37 @@ export const useWorkspaceStore = create<WorkspaceSlice>()(
             return { byProjectId: next }
           })
 
-        await runMockAgents(
-          { campaignType, description },
-          {
-            onAgentStart: (id) => progress(id, 'running'),
-            onAgentDone: (id, partial) => {
-              set((s) => {
-                const next = { ...s.byProjectId }
-                const e = ensureEntry(next, projectId)
-                e.runState = { ...e.runState, [id]: 'done' }
-                if (id === 'social' && partial.social) e.results.social = partial.social
-                if (id === 'copywriting' && partial.copywriting)
-                  e.results.copywriting = partial.copywriting
-                if (id === 'banner' && partial.banner) e.results.banner = partial.banner
-                if (id === 'imageGen' && partial.imageGen) e.results.imageGen = partial.imageGen
-                return { byProjectId: next }
-              })
-            },
-          }
+        const res = await campaignApi.generate(
+          { campaignType, description, targetAgentId: targetAgentId || undefined },
+          useAuthStore.getState().token || undefined
         )
+
+        if (res.ok) {
+          const id = targetAgentId || 'social' // default if targetAgentId was null
+          set((s) => {
+            const next = { ...s.byProjectId }
+            const e = ensureEntry(next, projectId)
+            e.runState = { ...e.runState, [id]: 'done' }
+            
+            // For now, since Gemini returns raw text, we store it in a simplified way
+            // In a real app, we'd parse the JSON if the prompt asked for it.
+            if (id === 'social') e.results.social = [{ platform: 'Gemini AI', text: res.data.content, hashtags: [] }]
+            if (id === 'copywriting') e.results.copywriting = [{ title: 'Gemini Deck', body: res.data.content }]
+            if (id === 'banner') e.results.banner = { headline: 'Gemini Gen', subhead: res.data.content, cta: 'Fly Now', dimensions: '1200x628', notes: 'AI Generated' }
+            if (id === 'imageGen') e.results.imageGen = { 
+              description: res.data.content, 
+              style: 'Aviation Photo', 
+              suggestedAlt: 'IndiGo Creative',
+              imageUrl: res.data.imageUrl 
+            }
+            
+            return { byProjectId: next }
+          })
+        } else {
+           // Handle error
+           const id = targetAgentId || 'social'
+           progress(id, 'error')
+        }
 
         set((s) => {
           const next = { ...s.byProjectId }

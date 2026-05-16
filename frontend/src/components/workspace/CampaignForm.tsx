@@ -12,9 +12,9 @@ interface CampaignFormProps {
 
 const types: { value: CampaignType; label: string; desc: string }[] = [
   { value: 'social', label: 'Social Burst', desc: 'Instagram, Twitter, FB content' },
-  { value: 'copy', label: 'Copy Deck', desc: 'Web, CRM, and internal briefs' },
+  { value: 'copywriting', label: 'Copy Deck', desc: 'Web, CRM, and internal briefs' },
   { value: 'banner', label: 'Visual Display', desc: 'Google Ads & Banner specs' },
-  { value: 'image', label: 'Gen Assets', desc: 'AI Image generation prompts' },
+  { value: 'imageGen', label: 'Gen Assets', desc: 'AI Image generation prompts' },
 ]
 
 export function CampaignForm({

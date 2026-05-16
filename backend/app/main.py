@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
 from app.db.database import Base, engine
-from app.routers import auth
+from app.routers import auth, campaign
+from app.models import campaign as campaign_models
 
 # ─── Create all DB tables on startup ─────────────────────────────────────────
 Base.metadata.create_all(bind=engine)
@@ -31,6 +34,11 @@ app.add_middleware(
 
 # ─── Routers ─────────────────────────────────────────────────────────────────
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(campaign.router, prefix="/api/v1")
+
+# ─── Serve Generated Images ──────────────────────────────────────────────────
+os.makedirs("generations", exist_ok=True)
+app.mount("/generations", StaticFiles(directory="generations"), name="generations")
 
 
 @app.get("/", tags=["Health"])

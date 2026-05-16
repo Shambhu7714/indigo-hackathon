@@ -1,4 +1,5 @@
 export type AgentId = 'social' | 'copywriting' | 'banner' | 'imageGen'
+export type CampaignType = AgentId
 
 export type AgentStatus = 'idle' | 'pending' | 'running' | 'done' | 'error'
 
@@ -39,6 +40,7 @@ export interface ImageGenResult {
   description: string
   style: string
   suggestedAlt: string
+  imageUrl?: string
 }
 
 export interface AgentResults {

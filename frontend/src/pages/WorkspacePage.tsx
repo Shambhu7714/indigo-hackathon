@@ -34,7 +34,8 @@ export function WorkspacePage() {
     if (!pid || !workspace) return
     setSubmitting(true)
     try {
-      await startCreating(pid)
+      // Pass the selected agent/campaign type so only that one runs
+      await startCreating(pid, workspace.campaign.campaignType as any)
     } finally {
       setSubmitting(false)
     }
